@@ -1,0 +1,111 @@
+Slave ==> someone who works on instructions provided by master
+master ==> owner who instructs 
+
+Master & slave in jenkins
+------------------------------------
+master ==> server where we have installed jenkins 
+slave/worker ==>  which will be connected to jenkins master, which follow instructions given by jenkins master & executes jobs.
+
+
+Why do we need to use master/slave setup ?
+----------------------------------------------------------------
+-  To reduce workloads on master server & distribute it to different servers.
+-   if we want to run specific job on specific server
+
+
+Important  NOTE:
+---------------------------
+Dual meanings:
+    nodes == agent == slaves == workers ==> all are same terminolgies
+
+
+
+==============Jenkins-Slave- Setup Practicals====================
+
+Step1): Launch Slave ec2-server and install java
+           
+		   yum install java-1.8* -y
+
+
+Step2) : Create a Jenkins user, set password, create jenkins path and enable the password authentication to yes
+
+        useradd jenkins
+        
+        passwd jenkins
+        
+        mkdir /var/lib/jenkins
+        
+        chown  -R jenkins:jenkins   /var/lib/jenkins
+        
+        vim /etc/ssh/sshd_config
+        
+        PasswordAuthentication no to yes
+        
+        service  sshd restart
+
+
+#### Configurations needs to be done in JENKINS UI #### 
+
+Step3):  Add the jenkins user name and password in jenkins Credentials section
+
+how to add credentials in jenkins?
+   Manage Jenkins==> Credentials ==> Add credentials
+   It will open credentials configuration page:
+         Kind==>username with password
+         Scope==>Global Username==> jenkins user name (created in slave server in step2)
+         Password==> password of Jenkins user (created in slave server in step2)
+
+
+Step4):   Add Node/Slave server in Jenkins Master  
+ 
+***********important_interview_question************
+How do you add slave in jenkins / steps involved in adding slave to jenkins ?
+
+Manage Jenkins==> Manage Nodes and Clouds==>New Node ==> provide Node name and select Permanent Agent and then click on create
+
+It will  open node configuration page
+
+             Name ==>Slave server name (can be any)
+             
+             Number of executors ==>The number of parallel jobs, which we can runs at a time
+             
+             Remote root directory ==>  directory path on slave server, where job gets executed
+             
+             Labels ==>give any name, ## labels will be used to control where we can run job  (it can be on master/slave) 
+             
+             Launch method ==> Launch agents via SSH Method
+             
+             Host ==> Slave server IP
+             
+             Credentials==> select the Jenkins credentials  created to access slave server
+             
+             Host Key Verification Strategy ==> Manually trusted key verification  startegy
+
+click on Save.
+
+
+
+How to Run job in slave?
+---------------------------------
+in configuration page of any jenkins job & under description section
+   select ==> Restrict where this project can be run  ==> labelname  ( give labelname of slave added)
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+How to add user in jenkins?
+JenkinsDashBoard ==> ManageJenkins==> Security section ==>manageUser==> create user 
+
+
+
+***********important_interview_question************
+
+How do you secure jenkins / what kind of security mechanism you have implemented in jenkins?
+==> we have implemented Matrix-based security, it will allow us to control users permissions, we can select checkboxes to give permissions.
+       for developers we have only provdided permissions to create, configure & run job. 
+	   
+	  Steps to implement  Matrix-based security
+	  JenkinsDashBoard ==> ManageJenkins==> Security section ==> Configure global security ==> Authorization ==> Matrix-based security ==> adduser
+	  select user ==> give permission which are applicable ==> save 
